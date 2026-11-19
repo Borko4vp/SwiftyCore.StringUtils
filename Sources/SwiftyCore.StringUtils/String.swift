@@ -29,8 +29,22 @@ public extension String {
       let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
       return String((0..<length).map { _ in letters.randomElement()! })
     }
+}
 
-    static func timeStringFromSeconds(_ seconds: Int) -> String {
+public extension String {
+    static func dateAwareTimestamp(for date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        if Calendar.current.isDateInToday(date) {
+            dateFormatter.dateFormat = "HH:mm"
+        } else if Calendar.current.isDate(Date(), equalTo: date, toGranularity: .year) {
+            dateFormatter.dateFormat = "dd/MM HH:mm"
+        } else {
+            dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
+        }
+        return dateFormatter.string(from: date)
+    }
+
+    static func duration(from seconds: Int) -> String {
         [seconds/3600, (seconds%3600)/60, (seconds%3600)%60]
             .map({ String(format: "%02d", $0) })
             .joined(separator: ":")
