@@ -1,4 +1,6 @@
 
+import Foundation
+
 public extension String {
     var initials: String {
         components(separatedBy: " ")
