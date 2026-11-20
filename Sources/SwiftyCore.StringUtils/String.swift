@@ -32,16 +32,25 @@ public extension String {
 }
 
 public extension String {
-    static func dateAwareTimestamp(for date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        if Calendar.current.isDateInToday(date) {
-            dateFormatter.dateFormat = "HH:mm"
-        } else if Calendar.current.isDate(Date(), equalTo: date, toGranularity: .year) {
-            dateFormatter.dateFormat = "dd/MM HH:mm"
-        } else {
-            dateFormatter.dateFormat = "dd/MM/yyyy HH:mm"
+    static func dateAwareTimestamp(for date: Date, calendar: Calendar = .current) -> String {
+        var style = Date.FormatStyle(calendar: calendar).hour().minute()
+        if !calendar.isDateInToday(date) {
+            style = style.month(.twoDigits).day(.twoDigits)
+            if !calendar.isDate(Date(), equalTo: date, toGranularity: .year) {
+                style = style.year()
+            }
         }
-        return dateFormatter.string(from: date)
+        return date.formatted(style)
+    }
+
+    static func dayDescription(for date: Date, calendar: Calendar = .current) -> String {
+        if calendar.isDateInToday(date) { return "Today" }
+        if calendar.isDateInYesterday(date) { return "Yesterday" }
+        var style = Date.FormatStyle(calendar: calendar).month(.abbreviated).day()
+        if !calendar.isDate(Date(), equalTo: date, toGranularity: .year) {
+            style = style.year()
+        }
+        return date.formatted(style)
     }
 
     static func duration(from seconds: Int) -> String {
